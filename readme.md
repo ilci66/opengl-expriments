@@ -7,3 +7,4 @@ This project serves as an exercise of setting up a structure for a C++ project a
 ## Currently Working On
 
 The shader files appear undefined (errno 2), trying to debug
+- Apparently it means the file does not exist
