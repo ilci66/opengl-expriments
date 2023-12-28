@@ -2,32 +2,18 @@
 
 std::string get_file_contents(const char *filename)
 {
-  std::cout << "get_file_contents:filename:" << filename << std::endl;
-
   std::ifstream in(filename, std::ios::binary);
-  // There is an error in "in"
-  if (in.is_open())
-  {
-    std::cout << "File is open and ready for reading." << std::endl;
-  }
-  else
-  {
-    std::cerr << "Failed to open file: " << filename << std::endl;
-    std::cerr << "Error opening file: " << strerror(errno) << std::endl;
-  }
+
   if (in)
   {
-    std::cout << "shaderClass:get_file_contents:is in:" << '\n';
     std::string contents;
     in.seekg(0, std::ios::end);
     contents.resize(in.tellg());
     in.seekg(0, std::ios::beg);
     in.read(&contents[0], contents.size());
     in.close();
-    std::cout << "shaderClass:get_file_contents:contents:" << contents << '\n';
     return (contents);
   }
-  std::cout << "shaderClass:get_file_contents:errno:" << errno << '\n';
   throw(errno);
 }
 
