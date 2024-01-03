@@ -1,31 +1,33 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <stb/stb_image.h>
 
+#include <texture/texture.h>
 #include <shaders/shaderClass.h>
 #include <VAO/VAO.h>
 #include <VBO/VBO.h>
 #include <EBO/EBO.h>
 
+// Vertices coordinates
 GLfloat vertices[] =
     {
-        //               COORDINATES                  /     COLORS           //
-        -0.5f, -0.5f * float(sqrt(3)) * 1 / 3, 0.0f, 0.8f, 0.3f, 0.02f,  // Lower left corner
-        0.5f, -0.5f * float(sqrt(3)) * 1 / 3, 0.0f, 0.8f, 0.3f, 0.02f,   // Lower right corner
-        0.0f, 0.5f * float(sqrt(3)) * 2 / 3, 0.0f, 1.0f, 0.6f, 0.32f,    // Upper corner
-        -0.25f, 0.5f * float(sqrt(3)) * 1 / 6, 0.0f, 0.9f, 0.45f, 0.17f, // Inner left
-        0.25f, 0.5f * float(sqrt(3)) * 1 / 6, 0.0f, 0.9f, 0.45f, 0.17f,  // Inner right
-        0.0f, -0.5f * float(sqrt(3)) * 1 / 3, 0.0f, 0.8f, 0.3f, 0.02f    // Inner down
+        //     COORDINATES     /        COLORS      /   TexCoord  //
+        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // Lower left corner
+        -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,  // Upper left corner
+        0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,   // Upper right corner
+        0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f   // Lower right corner
 };
 
+// Indices for vertices order
 GLuint indices[] =
     {
-        // Lower left triangle
-        0, 3, 5,
-        // Upper triangle
-        3, 2, 4,
-        // Lower right triangle
-        5, 4, 1};
+        0, 2, 1, // Upper triangle
+        0, 3, 2  // Lower triangle
+};
+
+int windowWidth = 1200;
+int windowHeight = 1200;
 
 int main()
 {
@@ -38,7 +40,7 @@ int main()
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-  GLFWwindow *window = glfwCreateWindow(800, 800, "IlkerTests", NULL, NULL);
+  GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight, "IlkerTests", NULL, NULL);
 
   if (window == NULL)
   {
@@ -49,7 +51,7 @@ int main()
 
   glfwMakeContextCurrent(window);
   gladLoadGL();
-  glViewport(0, 0, 800, 800);
+  glViewport(0, 0, windowWidth, windowHeight);
 
   std::filesystem::path parentPath = std::filesystem::current_path().parent_path();
 
@@ -77,15 +79,47 @@ int main()
   //  -- 4 bytes for each pos or color input float --  //
   //  -- Which makes the color offset 12 (color starts after 12) --  //
   // and offset and we don't currently have an offset for positions
-  VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 6 * sizeof(float), (void *)0);
-  VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 6 * sizeof(float), (void *)(3 * sizeof(float)));
-
-  // Gets ID of uniform called "scale"
-  GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
+  VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void *)0);
+  VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void *)(3 * sizeof(float)));
+  VAO1.LinkAttrib(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void *)(6 * sizeof(float)));
 
   VAO1.Unbind();
   VBO1.Unbind();
   EBO1.Unbind();
+
+  // Gets ID of uniform called "scale"
+  GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
+
+  // -------------- Texture ----------------
+
+  std::string parentPathStr = parentPath.string();
+  std::string texturePath = "/textures/";
+
+  Texture sadCat((parentPathStr + texturePath + "sad_cat.png").c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+  sadCat.texUnit(shaderProgram, "text0", 0);
+
+  int imgWidth, imgHeight, numColCh;
+  unsigned char *bytes = stbi_load("sad_cat.png", &imgWidth, &imgHeight, &numColCh, 0);
+
+  GLuint texture;
+  glGenTextures(1, &texture);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, texture);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imgWidth, imgHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
+  glGenerateMipmap(GL_TEXTURE_2D);
+
+  stbi_image_free(bytes);
+
+  GLuint tex0uni = glGetUniformLocation(shaderProgram.ID, "tex0");
+  shaderProgram.Activate();
+  glUniform1i(tex0uni, 0);
 
   while (!glfwWindowShouldClose(window))
   {
@@ -93,8 +127,11 @@ int main()
     glClear(GL_COLOR_BUFFER_BIT);
     shaderProgram.Activate();
     glUniform1f(uniID, 0.5f);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    sadCat.Bind();
     VAO1.Bind();
-    glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glfwSwapBuffers(window);
     glfwPollEvents();
   };
@@ -102,6 +139,7 @@ int main()
   VAO1.Delete();
   VBO1.Delete();
   EBO1.Delete();
+  sadCat.Delete();
   shaderProgram.Delete();
   glfwDestroyWindow(window);
   glfwTerminate();
