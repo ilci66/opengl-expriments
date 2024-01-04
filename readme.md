@@ -6,4 +6,4 @@ This project serves as an exercise of setting up a structure for a C++ project a
 
 ## Currently Working On
 
--- There is a problem with the string matching in sahderclass
+-- Texture class input appears to not match

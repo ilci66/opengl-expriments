@@ -96,6 +96,7 @@ int main()
   std::string texturePath = "/textures/";
 
   Texture sadCat((parentPathStr + texturePath + "sad_cat.png").c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+  
   sadCat.texUnit(shaderProgram, "text0", 0);
 
   int imgWidth, imgHeight, numColCh;
