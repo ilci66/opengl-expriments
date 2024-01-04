@@ -10,7 +10,7 @@ include_directories(${CMAKE_SOURCE_DIR}/dependencies/include)
 link_directories(${CMAKE_SOURCE_DIR}/dependencies/library)
 
 # Add source files
-file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/*.cpp" "${CMAKE_SOURCE_DIR}/glad.c")
+file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/*.cpp" "${CMAKE_SOURCE_DIR}/glad.c" "${CMAKE_SOURCE_DIR}/Texture.cpp")
 
 # Add executable
 add_executable(app ${SOURCES})
