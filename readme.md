@@ -6,4 +6,4 @@ This project serves as an exercise of setting up a structure for a C++ project a
 
 ## Currently Working On
 
--- Texture class input appears to not match
+-- There is no ouput in the app window, Why might it be
