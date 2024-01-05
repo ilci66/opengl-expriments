@@ -32,6 +32,7 @@ int windowHeight = 1200;
 int main()
 {
   glfwInit();
+
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -82,7 +83,7 @@ int main()
   VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void *)0);
   VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void *)(3 * sizeof(float)));
   VAO1.LinkAttrib(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void *)(6 * sizeof(float)));
-
+  // Unbind all to prevent accidentally modifying them
   VAO1.Unbind();
   VBO1.Unbind();
   EBO1.Unbind();
@@ -96,8 +97,8 @@ int main()
   std::string texturePath = "/textures/";
 
   Texture sadCat((parentPathStr + texturePath + "sad_cat.png").c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
-  
-  sadCat.texUnit(shaderProgram, "text0", 0);
+
+  sadCat.texUnit(shaderProgram, "tex0", 0);
 
   int imgWidth, imgHeight, numColCh;
   unsigned char *bytes = stbi_load("sad_cat.png", &imgWidth, &imgHeight, &numColCh, 0);
@@ -110,6 +111,7 @@ int main()
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
+  // S and T are equivalent of X and Y axes
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
