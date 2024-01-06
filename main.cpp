@@ -103,11 +103,18 @@ int main()
   int imgWidth, imgHeight, numColCh;
   unsigned char *bytes = stbi_load("sad_cat.png", &imgWidth, &imgHeight, &numColCh, 0);
 
+  // tried file location as well but didn't fix
+  // unsigned char *bytes = stbi_load((parentPathStr + texturePath + "sad_cat.png").c_str(), &imgWidth, &imgHeight, &numColCh, 0);
+  std::cout << "imgWidth: " << imgWidth << std::endl;
+  std::cout << "imgHeight: " << imgHeight << std::endl;
+  std::cout << "numColCh: " << numColCh << std::endl;
+
   GLuint texture;
   glGenTextures(1, &texture);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, texture);
 
+  // GL linear almost returns a blurry looking interpolated pixel using neihbouring pixels
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
