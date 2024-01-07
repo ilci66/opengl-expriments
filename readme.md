@@ -7,3 +7,16 @@ This project serves as an exercise of setting up a structure for a C++ project a
 ## Currently Working On
 
 -- There is no ouput in the app window, Why might it be
+Tried fixes:
+
+- Iamge was not being read correctly, now does but did not fix the error
+
+Possible Fixes:
+
+- From [learnopengl](https://learnopengl.com/Getting-started/Textures) copy the code for the textures since the freecodecamp tutorial video does mostly the same.
+- Might the problem be cause by the warning when make is ran in the command line :
+  `/Users/ilkerakbiyik/Desktop/dev-stuff/opengl-experiments/shaderClass.cpp:63:12: warning: result of comparison against a string literal is unspecified (use an explicit string comparison function instead) [-Wstring-compare]
+if (type != "PROGRAM")
+       ^  ~~~~~~~~~
+  `
+- Consider removing scale variable to simplify the app and focus on textures

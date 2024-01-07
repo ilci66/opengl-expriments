@@ -101,16 +101,18 @@ int main()
   sadCat.texUnit(shaderProgram, "tex0", 0);
 
   int imgWidth, imgHeight, numColCh;
-  unsigned char *bytes = stbi_load("sad_cat.png", &imgWidth, &imgHeight, &numColCh, 0);
+  // Pass in the file loacation isnstead of the name
+  unsigned char *bytes = stbi_load((parentPathStr + texturePath + "sad_cat.png").c_str(), &imgWidth, &imgHeight, &numColCh, 0);
+  // unsigned char *bytes = stbi_load("sad_cat.png", &imgWidth, &imgHeight, &numColCh, 0);
 
-  // tried file location as well but didn't fix
-  // unsigned char *bytes = stbi_load((parentPathStr + texturePath + "sad_cat.png").c_str(), &imgWidth, &imgHeight, &numColCh, 0);
+  // there might be an issue in the image
   std::cout << "imgWidth: " << imgWidth << std::endl;
   std::cout << "imgHeight: " << imgHeight << std::endl;
   std::cout << "numColCh: " << numColCh << std::endl;
 
   GLuint texture;
   glGenTextures(1, &texture);
+  std::cout << "texture: " << texture << std::endl;
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, texture);
 
@@ -121,9 +123,15 @@ int main()
   // S and T are equivalent of X and Y axes
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imgWidth, imgHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
-  glGenerateMipmap(GL_TEXTURE_2D);
+  if (bytes)
+  {
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imgWidth, imgHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
+    glGenerateMipmap(GL_TEXTURE_2D);
+  }
+  else
+  {
+    std::cout << "Failed to load texture" << std::endl;
+  }
 
   stbi_image_free(bytes);
 
