@@ -26,8 +26,11 @@ GLuint indices[] =
         0, 3, 2  // Lower triangle
 };
 
-int windowWidth = 1200;
-int windowHeight = 1200;
+void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+void processInput(GLFWwindow *window);
+
+const unsigned int windowWidth = 800;
+const unsigned int windowHeight = 600;
 
 int main()
 {
@@ -53,6 +56,12 @@ int main()
   glfwMakeContextCurrent(window);
   gladLoadGL();
   glViewport(0, 0, windowWidth, windowHeight);
+
+  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+  {
+    std::cout << "Failed to initialize GLAD" << std::endl;
+    return -1;
+  }
 
   std::filesystem::path parentPath = std::filesystem::current_path().parent_path();
 
