@@ -9,21 +9,34 @@
 #include <VBO/VBO.h>
 #include <EBO/EBO.h>
 
-// Vertices coordinates
-GLfloat vertices[] =
-    {
-        //     COORDINATES     /        COLORS      /   TexCoord  //
-        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // Lower left corner
-        -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,  // Upper left corner
-        0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,   // Upper right corner
-        0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f   // Lower right corner
+// // Vertices coordinates
+// GLfloat vertices[] =
+//     {
+//         //     COORDINATES     /        COLORS      /   TexCoord  //
+//         -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // Lower left corner
+//         -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,  // Upper left corner
+//         0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,   // Upper right corner
+//         0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f   // Lower right corner
+// };
+
+// // Indices for vertices order
+// GLuint indices[] =
+//     {
+//         0, 2, 1, // Upper triangle
+//         0, 3, 2  // Lower triangle
+// };
+
+float vertices[] = {
+    // positions          // colors           // texture coords
+    0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,   // top right
+    0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // bottom right
+    -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
+    -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f   // top left
 };
 
-// Indices for vertices order
-GLuint indices[] =
-    {
-        0, 2, 1, // Upper triangle
-        0, 3, 2  // Lower triangle
+unsigned int indices[] = {
+    0, 1, 3, // first triangle
+    1, 2, 3  // second triangle
 };
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -35,6 +48,12 @@ const unsigned int windowHeight = 600;
 int main()
 {
   glfwInit();
+
+  if (!glfwInit())
+  {
+    std::cout << "Failed to initialize GLFW" << std::endl;
+    return -1;
+  }
 
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -152,6 +171,12 @@ int main()
   {
     glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    // // /////////////
+    // glEnable(GL_DEPTH_TEST);
+    // glDepthFunc(GL_LESS);
+    // // /////////////
+
     shaderProgram.Activate();
     glUniform1f(uniID, 0.5f);
     glBindTexture(GL_TEXTURE_2D, 0);
