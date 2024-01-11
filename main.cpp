@@ -71,8 +71,9 @@ int main()
     glfwTerminate();
     return -1;
   }
-
   glfwMakeContextCurrent(window);
+  glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
   gladLoadGL();
   glViewport(0, 0, windowWidth, windowHeight);
 
@@ -196,4 +197,17 @@ int main()
   glfwDestroyWindow(window);
   glfwTerminate();
   return 0;
+}
+
+void processInput(GLFWwindow *window)
+{
+  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    glfwSetWindowShouldClose(window, true);
+}
+
+void framebuffer_size_callback(GLFWwindow *window, int width, int height)
+{
+  // make sure the viewport matches the new window dimensions; note that width and
+  // height will be significantly larger than specified on retina displays.
+  glViewport(0, 0, width, height);
 }
