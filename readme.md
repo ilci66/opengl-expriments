@@ -20,3 +20,5 @@ if (type != "PROGRAM")
        ^  ~~~~~~~~~
   `
 - Consider removing scale variable to simplify the app and focus on textures
+
+_Gonna remove all the code for the textures and render a simple triangle with the texture, making sure the code works_
