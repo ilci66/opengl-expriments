@@ -24,3 +24,9 @@ if (type != "PROGRAM")
 _Gonna remove all the code for the textures and render a simple triangle with the texture, making sure the code works_
 
 - Don't use any of the modules I created following the tutorial on youtube for this one, turns out I don't really understand their purpose
+
+## TODO Next
+
+Try to finish the exercises on the website before moving on
+
+- An extra challange would be setting different colors for each vertice
