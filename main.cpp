@@ -356,8 +356,9 @@ int main()
     glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
     // glDrawArrays(GL_TRIANGLES, 0, 3);
     // glDrawArrays(GL_TRIANGLES, 0, 6); // for two triangles
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);          // bind EBO to GL_ELEMENT_ARRAY_BUFFER
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // draw elements replaced draw arrays
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);           // wireframe mode
     // glBindVertexArray(0); // no need to unbind it every time
 
     // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -365,8 +366,15 @@ int main()
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
+  glDeleteVertexArrays(1, &VAO);
+  glDeleteBuffers(1, &VBO);
+  glDeleteBuffers(1, &EBO);
+  glDeleteProgram(shaderProgram);
 
-  return -1;
+  // glfw: terminate, clearing all previously allocated GLFW resources.
+  // ------------------------------------------------------------------
+  glfwTerminate();
+  return 0;
 }
 
 void processInput(GLFWwindow *window)
