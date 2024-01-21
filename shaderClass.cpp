@@ -22,16 +22,33 @@ Shader::Shader(const char *vertexFile, const char *fragmentFile)
   std::string vertexCode = get_file_contents(vertexFile);
   std::string fragmentCode = get_file_contents(fragmentFile);
 
+  int success;
+  char infoLog[512];
+
   const char *vertexSource = vertexCode.c_str();
   const char *fragmentSource = fragmentCode.c_str();
 
   GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertexShader, 1, &vertexSource, NULL);
   glCompileShader(vertexShader);
+  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+  if (!success)
+  {
+    glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+    std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
+              << infoLog << std::endl;
+  };
 
   GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
   glCompileShader(fragmentShader);
+  glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+  if (!success)
+  {
+    glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+    std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
+              << infoLog << std::endl;
+  };
 
   ID = glCreateProgram();
   glAttachShader(ID, vertexShader);
@@ -43,9 +60,24 @@ Shader::Shader(const char *vertexFile, const char *fragmentFile)
   glDeleteShader(fragmentShader);
 }
 
-void Shader::Activate()
+void Shader::use()
 {
   glUseProgram(ID);
+}
+
+void Shader::setBool(const std::string &name, bool value) const
+{
+  glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
+}
+
+void Shader::setInt(const std::string &name, int value) const
+{
+  glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
+}
+
+void Shader::setFloat(const std::string &name, float value) const
+{
+  glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 }
 
 void Shader::Delete()
