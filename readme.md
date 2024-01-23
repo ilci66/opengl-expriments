@@ -27,6 +27,4 @@ _Gonna remove all the code for the textures and render a simple triangle with th
 
 ## TODO Next
 
-Try to finish the exercises on the website before moving on
-
-- An extra challange would be setting different colors for each vertex
+Try to finish the exercises on the website before moving on for the textures 
