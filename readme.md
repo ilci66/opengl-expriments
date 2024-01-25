@@ -27,4 +27,4 @@ _Gonna remove all the code for the textures and render a simple triangle with th
 
 ## TODO Next
 
-Try to finish the exercises on the website before moving on for the textures 
+I finished the texture exercices now I need to work on trasnfromations
