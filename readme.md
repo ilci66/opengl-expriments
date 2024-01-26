@@ -28,3 +28,4 @@ _Gonna remove all the code for the textures and render a simple triangle with th
 ## TODO Next
 
 I finished the texture exercices now I need to work on trasnfromations
+- Currently going through all the things I already knew about
