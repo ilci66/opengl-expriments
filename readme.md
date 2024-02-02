@@ -27,5 +27,4 @@ _Gonna remove all the code for the textures and render a simple triangle with th
 
 ## TODO Next
 
-I finished the texture exercices now I need to work on trasnfromations
-- Transformations require a lot of change that is not covered in the tutorial relate4d to the shader class
+After addding the second scale animated textured rectangle I'm working on coordinate-systems
