@@ -64,15 +64,53 @@ int main()
   const char *vertFilePathStr = vertFilePath.c_str();
   const char *fragFilePathStr = fragFilePath.c_str();
 
+  glEnable(GL_DEPTH_TEST);
+
   Shader ourShader(vertFilePathStr, fragFilePathStr);
 
   float vertices[] = {
-      // positions          // texture coords
-      0.5f, 0.5f, 0.0f, 1.0f, 1.0f,   // top right
-      0.5f, -0.5f, 0.0f, 1.0f, 0.0f,  // bottom right
-      -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // bottom left
-      -0.5f, 0.5f, 0.0f, 0.0f, 1.0f   // top left
-  };
+      -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+      0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+      0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+      0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+      -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+      -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+
+      -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+      0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+      0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+      0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+      -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+      -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+
+      -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+      -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+      -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+      -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+      -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+      -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+
+      0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+      0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+      0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+      0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+      0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+      0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+
+      -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+      0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+      0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+      0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+      -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+      -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+
+      -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+      0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+      0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+      0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+      -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
+      -0.5f, 0.5f, -0.5f, 0.0f, 1.0f};
+
   unsigned int indices[] = {
       0, 1, 3, // first triangle
       1, 2, 3  // second triangle
@@ -165,7 +203,7 @@ int main()
     processInput(window);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture1);
@@ -178,7 +216,7 @@ int main()
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
 
-    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    model = glm::rotate(model, (float)glfwGetTime() * glm::radians(-50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
     // note that we're translating the scene in the reverse direction of where we want to move
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
     projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -200,13 +238,15 @@ int main()
     // glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     // second transformation
     transform = glm::mat4(1.0f);
     transform = glm::translate(transform, glm::vec3(-0.5f, 0.5f, 0.0f));
 
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
