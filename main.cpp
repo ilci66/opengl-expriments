@@ -221,11 +221,17 @@ int main()
     // activate shader
     ourShader.use();
 
+    const float radius = 10.0f;
+    float camX = sin(glfwGetTime()) * radius;
+    float camY = cos(glfwGetTime()) * radius;
+    glm::mat4 view;
+    view = glm::lookAt(glm::vec3(camX, 0, camY), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
     // create transformations
-    glm::mat4 view = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+    // glm::mat4 view = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
     glm::mat4 projection = glm::mat4(1.0f);
     projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    // view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
     // pass transformation matrices to the shader
     ourShader.setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
     ourShader.setMat4("view", view);
