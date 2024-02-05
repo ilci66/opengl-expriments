@@ -27,4 +27,4 @@ _Gonna remove all the code for the textures and render a simple triangle with th
 
 ## TODO Next
 
-After addding the second scale animated textured rectangle I'm working on coordinate-systems
+Camera movements in x and z should be studied more and played with
