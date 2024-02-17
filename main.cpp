@@ -320,7 +320,10 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
 // ---------------------------------------------------
 unsigned int loadTexture(char const *path)
 {
+
+  std::cout << "loadTexture:enter:path " << path << std::endl;
   unsigned int textureID;
+  std::cout << "textureID: " << textureID << std::endl;
   glGenTextures(1, &textureID);
 
   int width, height, nrComponents;
@@ -335,7 +338,9 @@ unsigned int loadTexture(char const *path)
     else if (nrComponents == 4)
       format = GL_RGBA;
 
+    // glBindTexture set the id of the second to 2 automatically
     glBindTexture(GL_TEXTURE_2D, textureID);
+    std::cout << "after glBindTexture:textureID: " << textureID << std::endl;
     glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
 
