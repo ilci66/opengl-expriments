@@ -168,16 +168,20 @@ int main()
 
   std::filesystem::path containerPath = parentPath / "container2.png";
   std::filesystem::path containerFramePath = parentPath / "container2_specular.png";
+  std::filesystem::path matrixEmissionPath = parentPath / "matrix.jpg";
 
   const char *containerPathStr = containerPath.c_str();
   const char *containerFramePathStr = containerFramePath.c_str();
+  const char *matrixEmissionPathStr = matrixEmissionPath.c_str();
 
   unsigned int diffuseMap = loadTexture(containerPathStr);
   unsigned int specularMap = loadTexture(containerFramePathStr);
+  unsigned int emissionMap = loadTexture(matrixEmissionPathStr);
 
   lightingShader.use();
   lightingShader.setInt("material.diffuse", 0);
   lightingShader.setInt("material.specular", 1);
+  lightingShader.setInt("material.emission", 2);
 
   while (!glfwWindowShouldClose(window))
   {
@@ -225,6 +229,9 @@ int main()
     // bind specular map
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, specularMap);
+    // bind emission map
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, emissionMap);
 
     // render the cube
     glBindVertexArray(cubeVAO);
@@ -320,9 +327,8 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
 // ---------------------------------------------------
 unsigned int loadTexture(char const *path)
 {
-
   std::cout << "loadTexture:enter:path " << path << std::endl;
-  unsigned int textureID;
+  unsigned int textureID = 1; // initialized with a value
   std::cout << "textureID: " << textureID << std::endl;
   glGenTextures(1, &textureID);
 
