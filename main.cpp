@@ -160,7 +160,8 @@ int main()
 
   unsigned int lenPointLights = sizeof(pointLightPositions) / sizeof(pointLightPositions[0]);
 
-  unsigned int VBO, cubeVAO;
+  unsigned int VBO,
+      cubeVAO;
   glGenVertexArrays(1, &cubeVAO);
   glGenBuffers(1, &VBO);
 
@@ -197,7 +198,7 @@ int main()
   // These don't need to be updated like the rest
   lightingShader.use();
   lightingShader.setInt("material.diffuse", 0);
-  lightingShader.setInt("material.specular", 0);
+  lightingShader.setInt("material.specular", 1);
 
   while (!glfwWindowShouldClose(window))
   {
@@ -213,19 +214,19 @@ int main()
 
     // render
     // ------
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // be sure to activate shader when setting uniforms/drawing objects
     lightingShader.use();
     lightingShader.setVec3("viewPos", camera.Position);
-    lightingShader.setFloat("material.shininess", 16.0f);
+    lightingShader.setFloat("material.shininess", 32.0f);
 
     // directional Light
     lightingShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
-    lightingShader.setVec3("dirLight.ambient", 0.0f, 0.0f, 0.0f);
-    lightingShader.setVec3("dirLight.diffuse", 0.0f, 0.0f, 0.0f);
-    lightingShader.setVec3("dirLight.specular", 0.2f, 0.2f, 0.2f);
+    lightingShader.setVec3("dirLight.ambient", 0.5f, 0.5f, 0.5f);
+    lightingShader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+    lightingShader.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
 
     // Point Lights
     for (size_t i = 0; i < lenPointLights; i++)
@@ -248,12 +249,12 @@ int main()
       snprintf(quadraticStr, sizeof(quadraticStr), "pointLights[%zu].quadratic", i);
 
       lightingShader.setVec3(positionStr, pointLightPositions[i]);
-      lightingShader.setVec3(ambientStr, 0.0f, 0.0f, 0.0f);
-      lightingShader.setVec3(diffuseStr, 0.08f, 0.08f, 0.08f);
-      lightingShader.setVec3(specularStr, 0.6f, 0.6f, 0.6f);
+      lightingShader.setVec3(ambientStr, 0.05f, 0.05f, 0.05f);
+      lightingShader.setVec3(diffuseStr, 0.0f, 0.83f, 0.14f);
+      lightingShader.setVec3(specularStr, 1.0f, 1.0f, 1.0f);
       lightingShader.setFloat(constantStr, 1.0f);
-      lightingShader.setFloat(linearStr, 0.07f);
-      lightingShader.setFloat(quadraticStr, 1.8f);
+      lightingShader.setFloat(linearStr, 0.35f);
+      lightingShader.setFloat(quadraticStr, 0.44f);
     }
 
     // Spotlight
@@ -263,12 +264,12 @@ int main()
     lightingShader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
     lightingShader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
     lightingShader.setFloat("spotLight.constant", 1.0f);
-    lightingShader.setFloat("spotLight.linear", 0.045f);
-    lightingShader.setFloat("spotLight.quadratic", 0.0075f);
+    lightingShader.setFloat("spotLight.linear", 0.7f);
+    lightingShader.setFloat("spotLight.quadratic", 1.8f);
     lightingShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.0f)));
     lightingShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 
-    lightingShader.setVec3("light.ambient", 0.0f, 0.0f, 0.0f);
+    lightingShader.setVec3("light.ambient", 0.1f, 0.1f, 0.1f);
     lightingShader.setVec3("light.diffuse", 0.8f, 0.8f, 0.8f);
     lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
 
@@ -309,7 +310,7 @@ int main()
     lightCubeShader.setMat4("view", view);
 
     glBindVertexArray(lightCubeVAO);
-    for (unsigned int i = 0; i < 1; i++)
+    for (unsigned int i = 0; i < lenPointLights; i++)
     {
 
       model = glm::mat4(1.0f);
