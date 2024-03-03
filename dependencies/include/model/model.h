@@ -26,22 +26,23 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
 class Model
 {
 public:
-  vector<Texture> textures_loaded;
+  // model data
+  vector<Texture> textures_loaded; // stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
   vector<Mesh> meshes;
   string directory;
   bool gammaCorrection;
 
+  // constructor, expects a filepath to a 3D model.
   Model(string const &path, bool gamma = false) : gammaCorrection(gamma)
   {
     loadModel(path);
   }
 
+  // draws the model, and thus all its meshes
   void Draw(Shader &shader)
   {
     for (unsigned int i = 0; i < meshes.size(); i++)
-    {
       meshes[i].Draw(shader);
-    }
   }
 
 private:
