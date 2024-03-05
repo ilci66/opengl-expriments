@@ -4,10 +4,15 @@ project(opengl-app)
 set(CMAKE_CXX_STANDARD 17)
 
 # Add include directories
-include_directories(${CMAKE_SOURCE_DIR}/dependencies/include)
+include_directories(
+    ${CMAKE_SOURCE_DIR}/dependencies/include
+    ${CMAKE_SOURCE_DIR}/dependencies/include/assimp # Include Assimp headers
+)
 
 # Add library directories
-link_directories(${CMAKE_SOURCE_DIR}/dependencies/library)
+link_directories(
+    ${CMAKE_SOURCE_DIR}/dependencies/library
+)
 
 # Add source files
 file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/*.cpp" "${CMAKE_SOURCE_DIR}/glad.c" "${CMAKE_SOURCE_DIR}/Texture.cpp")
@@ -23,6 +28,7 @@ target_link_libraries(app
     "-framework IOKit"
     "-framework CoreVideo"
     "-framework CoreFoundation"
+    assimp   # Link against Assimp library
 )
 
 # Set compiler options

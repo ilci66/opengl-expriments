@@ -6,6 +6,7 @@
 #include <glm/glm/glm.hpp>
 #include <glm/glm/gtc/matrix_transform.hpp>
 #include <stb/stb_image.h>
+
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -49,6 +50,7 @@ private:
   // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
   void loadModel(string const &path)
   {
+    cout << "path: " << path << endl;
     // read file via ASSIMP
     Assimp::Importer importer;
     const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
@@ -213,7 +215,7 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
   unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
   if (data)
   {
-    GLenum format;
+    GLenum format = 0;
     if (nrComponents == 1)
       format = GL_RED;
     else if (nrComponents == 3)

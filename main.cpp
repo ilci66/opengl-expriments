@@ -4,14 +4,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-
 #include <stb/stb_image.h>
 
 #include <glm/glm/glm.hpp>
@@ -21,6 +13,7 @@
 // #include <texture/texture.h>
 #include <shaders/shaderClass.h>
 #include <camera/camera.h>
+#include <model/model.h>
 // #include <VAO/VAO.h>
 // #include <VBO/VBO.h>
 // #include <EBO/EBO.h>
@@ -30,7 +23,6 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
-unsigned int loadTexture(const char *path);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -93,124 +85,14 @@ int main()
   const char *vertFilePathStr = vertFilePath.c_str();
   const char *fragFilePathStr = fragFilePath.c_str();
 
-  std::filesystem::path lightCubeVertFilePath = parentPath / "light_cube.vert";
-  std::filesystem::path lightCubeFragFilePath = parentPath / "light_cube.frag";
-
-  const char *lightCubeVertFilePathStr = lightCubeVertFilePath.c_str();
-  const char *lightCubeFragFilePathStr = lightCubeFragFilePath.c_str();
-
   glEnable(GL_DEPTH_TEST);
 
-  Shader lightingShader(vertFilePathStr, fragFilePathStr);
-  Shader lightCubeShader(lightCubeVertFilePathStr, lightCubeFragFilePathStr);
+  Shader ourShader(vertFilePathStr, fragFilePathStr);
 
-  float vertices[] = {
-      // positions          // normals           // texture coords
-      -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
-      0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
-      0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
-      0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
-      -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f,
-      -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
-
-      -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-      0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-      0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-      0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-      -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-      -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-
-      -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-      -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-      -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-      -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-      -0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-      -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-
-      0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-      0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-      0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-      0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-      0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-      0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-
-      -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
-      0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f,
-      0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-      0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-      -0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-      -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
-
-      -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-      0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-      0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-      0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-      -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-      -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f};
-
-  glm::vec3 cubePositions[] = {
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(2.0f, 5.0f, -15.0f),
-      glm::vec3(-1.5f, -2.2f, -2.5f),
-      glm::vec3(-3.8f, -2.0f, -12.3f),
-      glm::vec3(2.4f, -0.4f, -3.5f),
-      glm::vec3(-1.7f, 3.0f, -7.5f),
-      glm::vec3(1.3f, -2.0f, -2.5f),
-      glm::vec3(1.5f, 2.0f, -2.5f),
-      glm::vec3(1.5f, 0.2f, -1.5f),
-      glm::vec3(-1.3f, 1.0f, -1.5f)};
-
-  glm::vec3 pointLightPositions[] = {
-      glm::vec3(0.7f, 0.2f, 2.0f),
-      glm::vec3(2.3f, -3.3f, -4.0f),
-      glm::vec3(-4.0f, 2.0f, -12.0f),
-      glm::vec3(0.0f, 0.0f, -3.0f)};
-
-  unsigned int lenPointLights = sizeof(pointLightPositions) / sizeof(pointLightPositions[0]);
-
-  unsigned int VBO,
-      cubeVAO;
-  glGenVertexArrays(1, &cubeVAO);
-  glGenBuffers(1, &VBO);
-
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-  glBindVertexArray(cubeVAO);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
-  glEnableVertexAttribArray(2);
-
-  // second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
-  unsigned int lightCubeVAO;
-  glGenVertexArrays(1, &lightCubeVAO);
-  glBindVertexArray(lightCubeVAO);
-
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  // note that we update the lamp's position attribute's stride to reflect the updated buffer data
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
-  glEnableVertexAttribArray(0);
-
-  std::filesystem::path containerPath = parentPath / "container2.png";
-  std::filesystem::path containerFramePath = parentPath / "container2_specular.png";
-
-  const char *containerPathStr = containerPath.c_str();
-  const char *containerFramePathStr = containerFramePath.c_str();
-
-  unsigned int diffuseMap = loadTexture(containerPathStr);
-  unsigned int specularMap = loadTexture(containerFramePathStr);
-
-  // These don't need to be updated like the rest
-  lightingShader.use();
-  lightingShader.setInt("material.diffuse", 0);
-  lightingShader.setInt("material.specular", 1);
+  Model ourModel(parentPath / "backpack/backpack.obj");
 
   while (!glfwWindowShouldClose(window))
   {
-    // per-frame time logic
     // --------------------
     float currentFrame = static_cast<float>(glfwGetTime());
     deltaTime = currentFrame - lastFrame;
@@ -222,123 +104,30 @@ int main()
 
     // render
     // ------
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // be sure to activate shader when setting uniforms/drawing objects
-    lightingShader.use();
-    lightingShader.setVec3("viewPos", camera.Position);
-    lightingShader.setFloat("material.shininess", 32.0f);
-
-    // directional Light
-    lightingShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
-    lightingShader.setVec3("dirLight.ambient", 0.5f, 0.5f, 0.5f);
-    lightingShader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
-    lightingShader.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
-
-    // Point Lights
-    for (size_t i = 0; i < lenPointLights; i++)
-    {
-      // std::format didn't work with the current compiler, mac problems
-      char positionStr[50];
-      char ambientStr[50];
-      char diffuseStr[50];
-      char specularStr[50];
-      char constantStr[50];
-      char linearStr[50];
-      char quadraticStr[50];
-
-      snprintf(positionStr, sizeof(positionStr), "pointLights[%zu].position", i);
-      snprintf(ambientStr, sizeof(ambientStr), "pointLights[%zu].ambient", i);
-      snprintf(diffuseStr, sizeof(diffuseStr), "pointLights[%zu].diffuse", i);
-      snprintf(specularStr, sizeof(specularStr), "pointLights[%zu].specular", i);
-      snprintf(constantStr, sizeof(constantStr), "pointLights[%zu].constant", i);
-      snprintf(linearStr, sizeof(linearStr), "pointLights[%zu].linear", i);
-      snprintf(quadraticStr, sizeof(quadraticStr), "pointLights[%zu].quadratic", i);
-
-      lightingShader.setVec3(positionStr, pointLightPositions[i]);
-      lightingShader.setVec3(ambientStr, 0.05f, 0.05f, 0.05f);
-      lightingShader.setVec3(diffuseStr, 0.0f, 0.83f, 0.14f);
-      lightingShader.setVec3(specularStr, 1.0f, 1.0f, 1.0f);
-      lightingShader.setFloat(constantStr, 1.0f);
-      lightingShader.setFloat(linearStr, 0.35f);
-      lightingShader.setFloat(quadraticStr, 0.44f);
-    }
-
-    // Spotlight
-    lightingShader.setVec3("spotLight.position", camera.Position);
-    lightingShader.setVec3("spotLight.direction", camera.Front);
-    lightingShader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
-    lightingShader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
-    lightingShader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
-    lightingShader.setFloat("spotLight.constant", 1.0f);
-    lightingShader.setFloat("spotLight.linear", 0.7f);
-    lightingShader.setFloat("spotLight.quadratic", 1.8f);
-    lightingShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.0f)));
-    lightingShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
-
-    lightingShader.setVec3("light.ambient", 0.1f, 0.1f, 0.1f);
-    lightingShader.setVec3("light.diffuse", 0.8f, 0.8f, 0.8f);
-    lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+    // don't forget to enable shader before setting uniforms
+    ourShader.use();
 
     // view/projection transformations
     glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     glm::mat4 view = camera.GetViewMatrix();
-    lightingShader.setMat4("projection", projection);
-    lightingShader.setMat4("view", view);
+    ourShader.setMat4("projection", projection);
+    ourShader.setMat4("view", view);
 
-    // world transformation
+    // render the loaded model
     glm::mat4 model = glm::mat4(1.0f);
-    lightingShader.setMat4("model", model);
-
-    // bind diffuse map
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, diffuseMap);
-    // bind specular map
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, specularMap);
-
-    // render containers
-    glBindVertexArray(cubeVAO);
-    for (unsigned int i = 0; i < 10; i++)
-    {
-      // calculate the model matrix for each object and pass it to shader before drawing
-      glm::mat4 model = glm::mat4(1.0f);
-      model = glm::translate(model, cubePositions[i]);
-      float angle = 20.0f * i;
-      model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-      lightingShader.setMat4("model", model);
-
-      glDrawArrays(GL_TRIANGLES, 0, 36);
-    }
-
-    // draw the lamb objects
-    lightCubeShader.use();
-    lightCubeShader.setMat4("projection", projection);
-    lightCubeShader.setMat4("view", view);
-
-    glBindVertexArray(lightCubeVAO);
-    for (unsigned int i = 0; i < lenPointLights; i++)
-    {
-
-      model = glm::mat4(1.0f);
-      model = glm::translate(model, pointLightPositions[i]);
-      model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
-      lightCubeShader.setMat4("model", model);
-      glDrawArrays(GL_TRIANGLES, 0, 36);
-    }
+    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+    model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));     // it's a bit too big for our scene, so scale it down
+    ourShader.setMat4("model", model);
+    ourModel.Draw(ourShader);
 
     // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
     // -------------------------------------------------------------------------------
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
-
-  // optional: de-allocate all resources once they've outlived their purpose:
-  // ------------------------------------------------------------------------
-  glDeleteVertexArrays(1, &cubeVAO);
-  glDeleteVertexArrays(1, &lightCubeVAO);
-  glDeleteBuffers(1, &VBO);
 
   // glfw: terminate, clearing all previously allocated GLFW resources.
   // ------------------------------------------------------------------
@@ -363,7 +152,7 @@ void processInput(GLFWwindow *window)
     camera.ProcessKeyboard(RIGHT, deltaTime);
 }
 
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+// glfw : whenever the window size changed(by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
@@ -400,43 +189,4 @@ void mouse_callback(GLFWwindow *window, double xposIn, double yposIn)
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
 {
   camera.ProcessMouseScroll(static_cast<float>(yoffset));
-}
-
-// utility function for loading a 2D texture from file
-// ---------------------------------------------------
-unsigned int loadTexture(char const *path)
-{
-  unsigned int textureID;
-  glGenTextures(1, &textureID);
-
-  int width, height, nrComponents;
-  unsigned char *data = stbi_load(path, &width, &height, &nrComponents, 0);
-  if (data)
-  {
-    GLenum format = GL_RED;
-    if (nrComponents == 1)
-      format = GL_RED;
-    else if (nrComponents == 3)
-      format = GL_RGB;
-    else if (nrComponents == 4)
-      format = GL_RGBA;
-
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    stbi_image_free(data);
-  }
-  else
-  {
-    std::cout << "Texture failed to load at path: " << path << std::endl;
-    stbi_image_free(data);
-  }
-
-  return textureID;
 }
