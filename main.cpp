@@ -89,7 +89,10 @@ int main()
 
   Shader ourShader(vertFilePathStr, fragFilePathStr);
 
-  Model ourModel(parentPath / "backpack/backpack.obj");
+  // Model ourModel(parentPath / "backpack/backpack.obj");
+  Model ourModel(parentPath / "pony-cartoon/exported/Pony_cartoon.obj");
+
+  // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe
 
   while (!glfwWindowShouldClose(window))
   {
