@@ -52,7 +52,11 @@ private:
   {
     // read file via ASSIMP
     Assimp::Importer importer;
+#ifdef __APPLE__
+    const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
+#else
     const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+#endif
     // Removing aiProcess_FlipUVs rendered better looking textures
     // aiProcess_FlipUVs is to be added when using Direct3D I guess (windows)
     // const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals  | aiProcess_CalcTangentSpace);
