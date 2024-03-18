@@ -173,8 +173,8 @@ int main()
   // -------------
   // unsigned int cubeTexture = loadTexture((parentPath / "resources/textures/marble.jpg").c_str());
   // unsigned int floorTexture = loadTexture((parentPath / "resources/textures/metal.png").c_str());
-  unsigned int cubeTexture = loadTexture((parentPath / "resources/textures/sad_cat.jpeg").c_str());
-  unsigned int floorTexture = loadTexture((parentPath / "resources/textures/sad_cat.png").c_str());
+  unsigned int cubeTexture = loadTexture((parentPath / "resources/textures/marble.jpg").c_str());
+  unsigned int floorTexture = loadTexture((parentPath / "resources/textures/metal.png").c_str());
 
   // shader configuration
   // --------------------
