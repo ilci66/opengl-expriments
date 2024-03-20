@@ -1,0 +1,1 @@
+# There is a bug in the existing outlook andprobab;y about depth testing too a good exercise for me to learn about stencil buffer and depts testing better
