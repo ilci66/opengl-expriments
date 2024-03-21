@@ -179,10 +179,8 @@ int main()
 
   // load textures
   // -------------
-  // unsigned int cubeTexture = loadTexture((parentPath / "resources/textures/marble.jpg").c_str());
-  // unsigned int floorTexture = loadTexture((parentPath / "resources/textures/metal.png").c_str());
-  unsigned int cubeTexture = loadTexture((parentPath / "resources/textures/marble.jpg").c_str());
-  unsigned int floorTexture = loadTexture((parentPath / "resources/textures/metal.png").c_str());
+  unsigned int cubeTexture = loadTexture((parentPath / "resources/textures/metal.png").c_str());
+  unsigned int floorTexture = loadTexture((parentPath / "resources/textures/marble.jpg").c_str());
 
   // shader configuration
   // --------------------
@@ -206,7 +204,7 @@ int main()
     // render
     // ------
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     // set uniforms
     shaderSingleColor.use();
@@ -228,7 +226,6 @@ int main()
     shader.setMat4("model", glm::mat4(1.0f));
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
-
     // 1st. render pass, draw objects as normal, writing to the stencil buffer
     // --------------------------------------------------------------------
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
@@ -248,7 +245,6 @@ int main()
     // Because the stencil buffer is now filled with several 1s. The parts of the buffer that are 1 are not drawn, thus only drawing
     // the objects' size differences, making it look like borders.
     // -----------------------------------------------------------------------------------------------------------------------------
-
     glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
     glStencilMask(0x00);
     glDisable(GL_DEPTH_TEST);
@@ -256,7 +252,7 @@ int main()
     float scale = 1.1f;
     // cubes
     glBindVertexArray(cubeVAO);
-    glBindTexture(GL_TEXTURE_2D, cubeVAO);
+    glBindTexture(GL_TEXTURE_2D, cubeTexture);
     model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
     model = glm::scale(model, glm::vec3(scale, scale, scale));
