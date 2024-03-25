@@ -178,7 +178,7 @@ int main()
   unsigned int quadVAO, quadVBO;
   glGenVertexArrays(1, &quadVAO);
   glGenBuffers(1, &quadVBO);
-  glBindVertexArray(planeVAO);
+  glBindVertexArray(quadVAO);
   glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
@@ -216,8 +216,10 @@ int main()
   unsigned int rbo;
   glGenRenderbuffers(1, &rbo);
   glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);           // use a single renderbuffer object for both a depth AND stencil buffer.
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // now actually attach it
+  // use a single renderbuffer object for both a depth AND stencil buffer.
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
+  // now actually attach it
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
   // now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << endl;
@@ -228,6 +230,7 @@ int main()
 
   // render loop
   // -----------
+
   while (!glfwWindowShouldClose(window))
   {
     // per-frame time logic
@@ -240,19 +243,22 @@ int main()
     // -----
     processInput(window);
 
+    // render
+    // ------
+    // bind to framebuffer and draw scene as we normally would to color texture
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
 
+    // make sure we clear the framebuffer's content
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // draw objects
     shader.use();
-    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-    glm::mat4 view = camera.GetViewMatrix();
     glm::mat4 model = glm::mat4(1.0f);
-    shader.setMat4("projection", projection);
+    glm::mat4 view = camera.GetViewMatrix();
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     shader.setMat4("view", view);
+    shader.setMat4("projection", projection);
     // cubes
     glBindVertexArray(cubeVAO);
     glActiveTexture(GL_TEXTURE0);
@@ -267,9 +273,9 @@ int main()
     // floor
     glBindVertexArray(planeVAO);
     glBindTexture(GL_TEXTURE_2D, floorTexture);
-    model = glm::mat4(1.0f);
-    shader.setMat4("model", model);
+    shader.setMat4("model", glm::mat4(1.0f));
     glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
 
     // now bind back to default framebuffer and draw a quad plane with the attached framebuffer color texture
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -293,13 +299,16 @@ int main()
   // ------------------------------------------------------------------------
   glDeleteVertexArrays(1, &cubeVAO);
   glDeleteVertexArrays(1, &planeVAO);
+  glDeleteVertexArrays(1, &quadVAO);
   glDeleteBuffers(1, &cubeVBO);
   glDeleteBuffers(1, &planeVBO);
+  glDeleteBuffers(1, &quadVBO);
+  glDeleteRenderbuffers(1, &rbo);
+  glDeleteFramebuffers(1, &framebuffer);
 
   glfwTerminate();
   return 0;
 }
-
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow *window)
