@@ -2,3 +2,5 @@
 
 - It looks like the bug appears after the first movement. Which means the inital draw is fine and the user input breaks it. Probably a problem with the stencil buffer
   - Turns out I forgot to clear the stencil buffer
+
+## The project is still in the works and to be finished later after gasining some practical Three.js knowlegde
